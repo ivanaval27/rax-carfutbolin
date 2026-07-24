@@ -22,7 +22,7 @@ bool esperandoRearme = false;
 // Pin 7 = PD7 = PCINT23, grupo PCIE2
 volatile bool hazRoto = false;
 unsigned long hazRotoTime = 0;     // Timestamp del ISR para debounce
-const unsigned long DEBOUNCE_GOL = 5;  // 5ms de confirmación
+const unsigned long DEBOUNCE_GOL = 2;  // 2ms — filtra ruido pero detecta pelotas rápidas
 
 ISR(PCINT2_vect) {
   // PD7 HIGH = haz roto (TSOP38438 suelta la línea cuando no ve carrier)
