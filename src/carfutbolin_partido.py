@@ -122,7 +122,7 @@ class LectorSerial(threading.Thread):
             while self.running and not self.ready:
                 if self.ser and self.ser.in_waiting:
                     linea = self.ser.readline().decode().strip()
-                    if f"READY:{self.nombre[0]}" in linea:
+                    if "READY" in linea:
                         self.ready = True
                         logging.info(f"[{self.nombre}] READY recibido — sistema listo")
                 if time.time() > timeout_ready:
