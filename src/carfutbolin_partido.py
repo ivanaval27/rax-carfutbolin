@@ -722,7 +722,6 @@ class AppPartido:
         # Sonido y celebración
         sonido = f"gol_{label.lower()}.wav"
         self._reproducir_sonido(sonido)
-        self._reproducir_sonido("gol.wav")  # sonido genérico también
         self._celebrar_gol(label, color)
         # B3: Log de gol
         logging.info(f"GOL {label} ({minuto_gol}:{segundo_gol:02d} · {half_label}) — "
