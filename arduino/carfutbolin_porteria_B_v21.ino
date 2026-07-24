@@ -43,7 +43,7 @@ void configurarInterrupcion() {
 }
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);  // Alta velocidad para detección rápida
   pinMode(SENSOR_IR, INPUT);
   configurar38kHz();
   configurarInterrupcion();

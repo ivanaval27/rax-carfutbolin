@@ -1,42 +1,48 @@
 """
 RAX Carfutbolín — Test de lectura serial
-Lee puerto COM3 (Portería A) y muestra los mensajes en vivo
+Auto-detecta los Arduinos conectados y muestra mensajes en vivo
 Uso: python carfutbolin_test.py
 """
 
 import serial
+import serial.tools.list_ports
 import time
 
-PORT = "COM3"  # Cambiar si es otro COM
 BAUD = 9600
 
-try:
-    ser = serial.Serial(PORT, BAUD, timeout=3)
-    time.sleep(2)  # Esperar reset del Nano
+# Auto-detectar puertos USB
+puertos = [p.device for p in serial.tools.list_ports.comports()
+           if "USB" in p.description or "CH340" in p.description or "serie" in p.description]
 
-    print(f"✅ Conectado a {PORT} a {BAUD} baud")
-    print("Esperando datos... (Ctrl+C para salir)")
-    print("-" * 40)
+if not puertos:
+    print("❌ No se encontraron Arduinos conectados por USB")
+    print("   Conectá los Arduinos y volvé a intentar")
+    exit(1)
 
-    while True:
-        if ser.in_waiting:
-            linea = ser.readline().decode().strip()
-            print(f"📩 {linea}")
+print(f"🔍 Puertos detectados: {', '.join(puertos)}")
+print("-" * 40)
 
-            if "GOAL" in linea:
-                print("⚽⚽⚽ ¡GOLAZO! ⚽⚽⚽")
+for port in puertos:
+    try:
+        ser = serial.Serial(port, BAUD, timeout=2)
+        time.sleep(0.5)
+        ser.reset_input_buffer()
+        print(f"✅ {port} conectado — esperando datos (presioná Ctrl+C para salir)...")
+        print()
 
-        time.sleep(0.01)
+        while True:
+            if ser.in_waiting:
+                linea = ser.readline().decode('utf-8', errors='ignore').strip()
+                if linea:
+                    print(f"📩 {port}: {linea}")
+                    if "GOAL" in linea:
+                        print(f"⚽⚽⚽ ¡GOL en {port}! ⚽⚽⚽")
+            time.sleep(0.01)
 
-except serial.SerialException as e:
-    print(f"❌ Error conectando a {PORT}: {e}")
-    print("\nVerificar:")
-    print("  1. El Nano está conectado por USB")
-    print(f"  2. El puerto correcto es {PORT}")
-    print("  3. Driver CH340 instalado (si es clon chino)")
-except KeyboardInterrupt:
-    print("\n👋 Prueba terminada")
-finally:
-    if 'ser' in locals() and ser.is_open:
-        ser.close()
-        print("Puerto cerrado")
+    except serial.SerialException as e:
+        print(f"❌ Error en {port}: {e}")
+    except KeyboardInterrupt:
+        print(f"\n👋 {port} cerrado")
+    finally:
+        if 'ser' in locals() and ser.is_open:
+            ser.close()

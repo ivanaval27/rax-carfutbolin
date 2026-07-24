@@ -138,7 +138,7 @@ class LectorSerial(threading.Thread):
                     if "GOAL" in linea and self.ready:  # B2: ignorar si no ready
                         logging.info(f"[{self.nombre}] GOAL detectado")
                         self.callback(self.nombre)
-                time.sleep(0.02)
+                time.sleep(0.002)  # 2ms para detección rápida
         except Exception as e:
             logging.error(f"[{self.nombre}] Error de conexion serial: {e}")
             # B1: notificar al hilo principal via callback
@@ -461,7 +461,7 @@ class AppPartido:
         if self.puerto_negro:
             try:
                 self.lector_negro = LectorSerial(
-                    self.puerto_negro, 9600, self._gol_detectado,
+                    self.puerto_negro, 115200, self._gol_detectado,
                     self._error_serial, "NEGRO")
                 self.lector_negro.start()
                 self.lbl_com_negro.config(
@@ -475,7 +475,7 @@ class AppPartido:
         if self.puerto_azul:
             try:
                 self.lector_azul = LectorSerial(
-                    self.puerto_azul, 9600, self._gol_detectado,
+                    self.puerto_azul, 115200, self._gol_detectado,
                     self._error_serial, "AZUL")
                 self.lector_azul.start()
                 self.lbl_com_azul.config(
