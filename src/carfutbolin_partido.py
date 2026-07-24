@@ -1062,6 +1062,7 @@ class AppPartido:
             self.lbl_gol.config(text="☕ DESCANSO — 2do tiempo en breve...", fg=COLOR_ROJO_RAX)
             self._actualizar_ui()
             # Iniciar descanso automático
+            self._reproducir_sonido("descanso.wav")
             self._iniciar_timer()
 
         elif self.estado == DESCANSO:
