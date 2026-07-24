@@ -2,11 +2,11 @@
 
 
 a = Analysis(
-    ['Z:/home/vortex1/Documentos/carfutbolin_partido.py'],
+    ['Z:\\home\\vortex1\\Documentos\\RAX_CarFutbolin\\src\\carfutbolin_partido.py'],
     pathex=[],
     binaries=[],
     datas=[],
-    hiddenimports=[],
+    hiddenimports=['serial', 'serial.tools.list_ports', 'winsound'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -35,4 +35,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon=['Z:\\home\\vortex1\\Documentos\\RAX_CarFutbolin\\installer\\rax_carfutbolin.ico'],
 )
