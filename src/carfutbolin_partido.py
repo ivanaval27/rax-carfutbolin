@@ -74,13 +74,13 @@ MINUTOS_PARTIDO = 4
 MINUTOS_DESCANSO = 4
 
 # Colores RAX Brand Book
+COLOR_ORO = "#DB9651"
 COLOR_NEGRO = "#1a1a1a"
 COLOR_AZUL = "#0044ff"
 COLOR_BG = "#050505"
 COLOR_BG2 = "#0a0a0a"
 COLOR_GLASS = "#141414"
 COLOR_SILVER = "#a0a0a0"
-COLOR_ORO = "#DB9651"
 COLOR_AZUL_OSCURO = "#08081f"  # Fondo para columna AZUL en historial
 # ============================================================
 # ESTADOS DEL PARTIDO
@@ -255,7 +255,7 @@ class VentanaConfig:
 
         # Frame selector
         frame = tk.Frame(self.ventana, bg=COLOR_BG2, bd=0,
-                         highlightbackground="#0044ff", highlightthickness=1)
+                         highlightbackground=COLOR_ORO, highlightthickness=1)
         frame.pack(padx=40, pady=10, fill="x")
 
         # Equipo NEGRO
@@ -355,9 +355,9 @@ class VentanaConfig:
                   activebackground="#3d9e3d", cursor="hand2",
                   command=self._guardar_config).pack(side="left", padx=5)
 
-        tk.Button(btn_frame, text="⚽ INICIAR PARTIDO", bg=COLOR_AZUL, fg="white",
+        tk.Button(btn_frame, text="⚽ INICIAR PARTIDO", bg=COLOR_ORO, fg="#050505",
                   font=("Segoe UI", 12, "bold"), bd=0, padx=20, pady=8,
-                  activebackground="#3366ff", cursor="hand2",
+                  activebackground="#c97a3e", cursor="hand2",
                   command=self._iniciar).pack(side="left", padx=5)
 
     def _iniciar(self):
@@ -517,7 +517,7 @@ class AppPartido:
             tk.Label(top_row, image=self.img_logo,
                      bg=COLOR_BG).pack(side="left", padx=(0, 10))
         tk.Label(top_row, text="RAX CARFUTBOLÍN",
-                 font=self.fnt_titulo, fg=COLOR_AZUL, bg=COLOR_BG,
+                 font=self.fnt_titulo, fg=COLOR_ORO, bg=COLOR_BG,
                  anchor="w").pack(side="left")
         
         # Botón pantalla completa
@@ -527,7 +527,7 @@ class AppPartido:
         self.btn_fullscreen.pack(side="right", padx=5)
         self.btn_fullscreen.bind("<Button-1>", lambda e: self._entrar_fullscreen() if not self.fullscreen else self._salir_fullscreen())
         
-        tk.Frame(header, bg=COLOR_AZUL, height=2).pack(fill="x", pady=2)
+        tk.Frame(header, bg=COLOR_ORO, height=2).pack(fill="x", pady=2)
 
         info_estado = tk.Frame(header, bg=COLOR_BG)
         info_estado.pack()
@@ -551,7 +551,7 @@ class AppPartido:
         self.lbl_gol.pack(pady=3)
 
         # SCOREBOARD
-        score_frame = tk.Frame(left, bg="#0d0d0d", highlightbackground="#0044ff",
+        score_frame = tk.Frame(left, bg="#0d0d0d", highlightbackground=COLOR_ORO,
                                highlightthickness=2, bd=0)
         score_frame.pack(pady=8, ipadx=25, ipady=10)
 
@@ -584,14 +584,14 @@ class AppPartido:
                                        font=self.fnt_score, fg=COLOR_AZUL, bg=COLOR_BG2)
         self.lbl_score_azul.pack()
 
-        tk.Frame(left, bg="#0044ff", height=1).pack(fill="x", pady=5)
+        tk.Frame(left, bg=COLOR_ORO, height=1).pack(fill="x", pady=5)
 
         # CONTROLES
         btn_frame = tk.Frame(left, bg=COLOR_BG)
         btn_frame.pack(pady=6)
         self.btn_iniciar = tk.Button(btn_frame, text="⏯ INICIAR PARTIDO",
-                                     font=self.fnt_btn, bg=COLOR_AZUL, fg="white",
-                                     activebackground="#3366ff", bd=0, padx=15,
+                                     font=self.fnt_btn, bg=COLOR_ORO, fg="white",
+                                     activebackground="#c97a3e", bd=0, padx=15,
                                      pady=6, cursor="hand2", command=self._iniciar_partido)
         self.btn_iniciar.pack(side="left", padx=3)
         self.btn_descanso = tk.Button(btn_frame, text="☐ DESCANSO",
@@ -601,8 +601,8 @@ class AppPartido:
                                       command=self._iniciar_descanso)
         self.btn_descanso.pack(side="left", padx=3)
         self.btn_segundo = tk.Button(btn_frame, text="⚽ 2DO TIEMPO",
-                                     font=self.fnt_btn, bg=COLOR_AZUL, fg="white",
-                                     activebackground="#3366ff", bd=0, padx=12,
+                                     font=self.fnt_btn, bg=COLOR_ORO, fg="white",
+                                     activebackground="#c97a3e", bd=0, padx=12,
                                      pady=6, cursor="hand2", state="disabled",
                                      command=self._iniciar_segundo_tiempo)
         self.btn_segundo.pack(side="left", padx=3)
@@ -610,7 +610,7 @@ class AppPartido:
                   fg="#ccc", activebackground="#555", bd=0, padx=10,
                   pady=6, cursor="hand2", command=self._reset).pack(side="left", padx=3)
         tk.Button(btn_frame, text="⏻ SALIR", font=self.fnt_btn,
-                  bg="#00004d", fg=COLOR_AZUL, activebackground="#00001a",
+                  bg="#0a0a0a", fg=COLOR_ORO, activebackground="#00001a",
                   bd=0, padx=12, pady=6, cursor="hand2",
                   command=self._salir).pack(side="left", padx=5)
 
@@ -631,7 +631,7 @@ class AppPartido:
                  font=("Segoe UI", 8), fg="#555", bg=COLOR_BG).pack(side="bottom", pady=2)
 
         # === LADO DERECHO: Historial ===
-        right = tk.Frame(main, bg=COLOR_BG2, highlightbackground="#0044ff",
+        right = tk.Frame(main, bg=COLOR_BG2, highlightbackground=COLOR_ORO,
                          highlightthickness=1, width=380)
         right.pack(side="right", fill="y", padx=(15, 0))
         right.pack_propagate(False)
@@ -639,14 +639,14 @@ class AppPartido:
         # Título
         tk.Label(right, text="📋 GOLES", font=self.fnt_estado,
                          fg=COLOR_ORO, bg="#0d0d0d").pack(pady=(10, 5))
-        tk.Frame(right, bg=COLOR_AZUL, height=1).pack(fill="x", padx=10, pady=2)
+        tk.Frame(right, bg=COLOR_ORO, height=1).pack(fill="x", padx=10, pady=2)
 
         # Columnas de equipos
         cols = tk.Frame(right, bg=COLOR_BG2)
         cols.pack(fill="both", expand=True, padx=5)
 
         # NEGRO
-        col_negro = tk.Frame(cols, bg=COLOR_NEGRO, highlightbackground="#0044ff",
+        col_negro = tk.Frame(cols, bg=COLOR_NEGRO, highlightbackground=COLOR_ORO,
                              highlightthickness=1)
         col_negro.pack(side="left", fill="both", expand=True, padx=2)
         col_negro.pack_propagate(False)
@@ -660,10 +660,10 @@ class AppPartido:
         self.canvas_negro.create_window((0, 0), window=self.inner_negro, anchor="nw")
 
         # Separador
-        tk.Frame(cols, bg=COLOR_AZUL, width=2).pack(side="left", fill="y", padx=1)
+        tk.Frame(cols, bg=COLOR_ORO, width=2).pack(side="left", fill="y", padx=1)
 
         # AZUL
-        col_azul = tk.Frame(cols, bg=COLOR_AZUL_OSCURO, highlightbackground="#0044ff",
+        col_azul = tk.Frame(cols, bg=COLOR_AZUL_OSCURO, highlightbackground=COLOR_ORO,
                              highlightthickness=1)
         col_azul.pack(side="left", fill="both", expand=True, padx=2)
         col_azul.pack_propagate(False)
@@ -1040,7 +1040,7 @@ class AppPartido:
         self.lbl_tiempo.config(text=f"{m}:{s:02d}")
 
         if self.tiempo_restante <= 30:
-            self.lbl_tiempo.config(fg=COLOR_AZUL)
+            self.lbl_tiempo.config(fg=COLOR_ORO)
         elif self.tiempo_restante <= 60:
             self.lbl_tiempo.config(fg=COLOR_ORO)
         else:
@@ -1050,7 +1050,7 @@ class AppPartido:
 
     def _tiempo_cumplido(self):
         self.timer_corriendo = False
-        self.lbl_tiempo.config(text="0:00", fg=COLOR_AZUL)
+        self.lbl_tiempo.config(text="0:00", fg=COLOR_ORO)
         logging.info(f"TIEMPO CUMPLIDO — Estado: {ESTADOS.get(self.estado, '?')}")
 
         if self.estado == PRIMER_TIEMPO:
@@ -1106,7 +1106,7 @@ class AppPartido:
         self.lbl_eq_negro.config(text="⚪ NEGRO")
         self.lbl_eq_azul.config(text="🔵 AZUL")
 
-        self.btn_iniciar.config(state="normal", text="⏯ INICIAR PARTIDO", bg=COLOR_AZUL)
+        self.btn_iniciar.config(state="normal", text="⏯ INICIAR PARTIDO", bg=COLOR_ORO)
         self.btn_descanso.config(state="disabled", bg="#333", fg="#ccc")
         self.btn_segundo.config(state="disabled")
 
