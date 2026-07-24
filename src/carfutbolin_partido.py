@@ -415,6 +415,11 @@ class AppPartido:
         self.ventana.bind("<Escape>", lambda e: self._salir_fullscreen())
         self.ventana.bind("<F11>", lambda e: self._entrar_fullscreen())
         self.ventana.bind("<space>", lambda e: self._toggle_partido())
+        # Goles manuales por teclado (N=Negro, A=Azul)
+        self.ventana.bind("n", lambda e: self._gol_manual("NEGRO"))
+        self.ventana.bind("N", lambda e: self._gol_manual("NEGRO"))
+        self.ventana.bind("a", lambda e: self._gol_manual("AZUL"))
+        self.ventana.bind("A", lambda e: self._gol_manual("AZUL"))
         try:
             self.ventana.iconbitmap(default=os.path.join(
                 os.path.dirname(os.path.abspath(__file__)), "rax_carfutbolin.ico"))
@@ -691,6 +696,13 @@ class AppPartido:
     # ============================================================
     # LÓGICA DEL PARTIDO
     # ============================================================
+    def _gol_manual(self, equipo):
+        """Gol manual por teclado (N=Negro, A=Azul)"""
+        if self.estado not in (PRIMER_TIEMPO, SEGUNDO_TIEMPO):
+            return
+        logging.info(f"[{equipo}] GOL MANUAL (teclado)")
+        self._gol_detectado(equipo)
+
     def _gol_detectado(self, equipo):
         if self.estado not in (PRIMER_TIEMPO, SEGUNDO_TIEMPO):
             return
