@@ -734,7 +734,7 @@ class AppPartido:
         s = int((self.MINUTOS_PARTIDO * 60 - self.tiempo_restante) % 60)
         half = "1ER TIEMPO" if self.estado == PRIMER_TIEMPO else "2DO TIEMPO"
         self.lbl_gol.config(
-            text=f"⚽ GOL {equipo}! ({m}:{s:02d} · {half}) ⚽",
+            text=f"⚽ GOL del Equipo {equipo}! ({m}:{s:02d} · {half}) ⚽",
             fg=color)
         self.lbl_tiempo.config(fg=COLOR_ORO)
         self.ventana.after(3000, self._limpiar_gol)
