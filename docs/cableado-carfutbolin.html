@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAX Carfutbolín — Cableado Arduino Nano</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #0A0A0A;
+    color: #e0e0e0;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  .header {
+    text-align: center;
+    padding: 30px 0 20px;
+    border-bottom: 1px solid #222;
+    margin-bottom: 30px;
+  }
+  .header h1 { font-size: 2.4em; font-weight: 900; letter-spacing: -1px; }
+  .header h1 .rax { color: #E30613; }
+  .header h1 .carfutbolin { color: #FF6B00; }
+  .header .sub { color: #888; font-size: 0.9em; margin-top: 5px; letter-spacing: 2px; }
+
+  .section {
+    background: #111; border: 1px solid #222; border-radius: 16px;
+    padding: 25px; margin-bottom: 20px;
+  }
+  .section h2 { font-size: 1.3em; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+
+  .nano-board {
+    background: #0d1a0d; border: 2px solid #2ecc71; border-radius: 16px;
+    padding: 20px; margin: 15px 0; position: relative;
+    display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;
+  }
+  .nano-board .chip { font-family: 'JetBrains Mono', monospace; font-size: 0.7em; color: #aaa; }
+  .nano-board .title {
+    text-align: center; color: #2ecc71; font-weight: 700;
+    font-size: 0.9em; margin-bottom: 10px; letter-spacing: 2px;
+    width: 100%;
+  }
+
+  .pin-col { display: flex; flex-direction: column; gap: 2px; }
+  .pin-row { display: flex; gap: 2px; justify-content: center; }
+  .pin {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.6em;
+    padding: 3px 5px; border-radius: 3px; min-width: 38px;
+    text-align: center; border: 1px solid transparent;
+  }
+  .pin.green { background: #1a3a1a; border-color: #2ecc71; color: #2ecc71; }
+  .pin.red { background: #3a1a1a; border-color: #E30613; color: #E30613; }
+  .pin.orange { background: #3a3a1a; border-color: #FF6B00; color: #FF6B00; }
+  .pin.gray { background: #2a2a2a; border-color: #666; color: #999; }
+  .pin.blue { background: #1a1a2a; border-color: #4a9eff; color: #4a9eff; }
+  .pin.purple { background: #2a1a3a; border-color: #9b59b6; color: #9b59b6; }
+
+  .wiring-table {
+    width: 100%; border-collapse: collapse; font-size: 0.85em; margin: 15px 0;
+  }
+  .wiring-table th {
+    background: #1a1a1a; color: #FF6B00; padding: 10px 12px;
+    text-align: left; border-bottom: 2px solid #FF6B00; font-weight: 600;
+  }
+  .wiring-table td {
+    padding: 8px 12px; border-bottom: 1px solid #222;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.85em;
+  }
+  .wiring-table tr:hover td { background: #1a1a1a; }
+
+  .diagram-box {
+    background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 12px;
+    padding: 20px; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72em; line-height: 1.5; overflow-x: auto;
+    white-space: pre; color: #aaa; margin: 15px 0;
+  }
+
+  .note {
+    background: #1a1a2a; border-left: 4px solid #4a9eff;
+    padding: 15px 20px; border-radius: 0 10px 10px 0;
+    margin: 15px 0; font-size: 0.85em; color: #bbb;
+  }
+  .note.warn { border-left-color: #FF6B00; background: #2a1a0a; }
+  .note.danger { border-left-color: #E30613; background: #2a0a0a; }
+  .note.ok { border-left-color: #2ecc71; background: #0a2a1a; }
+
+  .code-box {
+    background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 10px;
+    padding: 15px; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75em; line-height: 1.6; overflow-x: auto;
+    color: #a0d0a0; margin: 15px 0;
+  }
+  .code-box .comment { color: #666; }
+  .code-box .keyword { color: #4a9eff; }
+  .code-box .string { color: #2ecc71; }
+  .code-box .func { color: #FF6B00; }
+  .code-box .num { color: #9b59b6; }
+
+  .legend {
+    display: flex; gap: 20px; flex-wrap: wrap; margin: 15px 0;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.8em; }
+  .legend-dot { width: 14px; height: 14px; border-radius: 4px; }
+  .legend-dot.green { background: #2ecc71; }
+  .legend-dot.red { background: #E30613; }
+  .legend-dot.orange { background: #FF6B00; }
+  .legend-dot.gray { background: #666; }
+  .legend-dot.blue { background: #4a9eff; }
+
+  @media (max-width: 768px) {
+    .header h1 { font-size: 1.5em; }
+    .section { padding: 15px; }
+    .pin { font-size: 0.5em; min-width: 30px; padding: 2px 3px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1><span class="rax">RAX</span> <span class="carfutbolin">CARFUTBOLÍN</span></h1>
+    <div class="sub">SISTEMA DE DETECCIÓN DE GOLES — ARDUINO NANO V3 + TSOP38438 + LED IR</div>
+  </div>
+
+  <div class="legend">
+    <span class="legend-item"><span class="legend-dot green"></span> Señal / Sensor</span>
+    <span class="legend-item"><span class="legend-dot red"></span> LED IR</span>
+    <span class="legend-item"><span class="legend-dot orange"></span> Alimentación</span>
+    <span class="legend-item"><span class="legend-dot gray"></span> GND</span>
+    <span class="legend-item"><span class="legend-dot blue"></span> Comunicación</span>
+  </div>
+
+  <!-- Pinout -->
+  <div class="section">
+    <h2>📍 Pinout — Arduino Nano V3</h2>
+    <div class="nano-board">
+      <div class="title">ARDUINO NANO V3 · PORTERÍA A (COM3)</div>
+      <div style="display:flex;gap:30px;flex-wrap:wrap;justify-content:center;">
+        <div>
+          <div style="text-align:center;color:#555;font-size:0.7em;margin-bottom:5px;">├─ IZQUIERDA ─┤</div>
+          <div class="pin-col">
+            <div class="pin-row">
+              <span class="pin gray">D1 TX</span>
+              <span class="pin gray">D0 RX</span>
+            </div>
+            <div class="pin-row">
+              <span class="pin gray">RST</span>
+              <span class="pin gray">GND</span>
+            </div>
+            <div class="pin-row">
+              <span class="pin orange">D2</span>
+              <span class="pin orange">D3 ▶</span> <div class="legend-item" style="font-size:0.6em;color:#FF6B00;">EMISOR IR</div>
+            </div>
+            <div class="pin-row">
+              <span class="pin orange">D4</span>
+              <span class="pin orange">D5</span>
+            </div>
+            <div class="pin-row">
+              <span class="pin orange">D6</span>
+              <span class="pin green">D7 ▶</span> <div class="legend-item" style="font-size:0.6em;color:#2ecc71;">TSOP OUT</div>
+            </div>
+            <div class="pin-row">
+              <span class="pin orange">D8</span>
+              <span class="pin orange">D9</span>
+            </div>
+            <div class="pin-row">
+              <span class="pin blue">D10 SS</span>
+              <span class="pin blue">D11 MOSI</span>
+            </div>
+            <div class="pin-row">
+              <span class="pin blue">D12 MISO</span>
+              <span class="pin blue">D13 SCK</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;justify-content:center;">
+          <div style="background:#1a1a2e;border:2px solid #4a9eff;border-radius:50%;width:60px;height:60px;display:flex;align-items:center;justify-content:center;margin:10px auto;">
+            <span style="color:#4a9eff;font-size:0.6em;text-align:center;">ATMEGA<br>328P</span>
+          </div>
+        </div>
+        <div>
+          <div style="text-align:center;color:#555;font-size:0.7em;margin-bottom:5px;">├─ DERECHA ─┤</div>
+          <div class="pin-col">
+            <div class="pin-row">
+              <span class="pin gray">VIN</span>
+              <span class="pin gray">GND</span>
+            </div>
+            <div class="pin-row">
+              <span class="pin gray">GND</span>
+              <span class="pin gray">RST</span>
+            </div>
+            <div class="pin-row">
+              <span class="pin orange">5V</span>
+              <span class="pin orange">AREF</span>
+            </div>
+            <div class="pin-row">
+              <span class="pin blue">A0</span>
+              <span class="pin blue">A1</span>
+            </div>
+            <div class="pin-row">
+              <span class="pin blue">A2</span>
+              <span class="pin blue">A3</span>
+            </div>
+            <div class="pin-row">
+              <span class="pin blue">A4 SDA</span>
+              <span class="pin blue">A5 SCL</span>
+            </div>
+            <div class="pin-row">
+              <span class="pin blue">A6</span>
+              <span class="pin blue">A7</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de conexiones -->
+  <div class="section">
+    <h2>🔌 Tabla de Conexiones — Portería A</h2>
+    <table class="wiring-table">
+      <tr><th>Componente</th><th>Pin Componente</th><th>Pin Nano</th><th>Nota</th></tr>
+      <tr><td rowspan="3"><b>TSOP38438</b><br>(Receptor IR)</td><td>VCC</td><td><span style="color:#FF6B00;">5V</span></td><td>Alimentación 5V</td></tr>
+      <tr><td>GND</td><td><span style="color:#999;">GND</span></td><td>Tierra común</td></tr>
+      <tr><td>OUT</td><td><span style="color:#2ecc71;">D7</span></td><td>Señal: LOW = haz presente, HIGH = balón cortó</td></tr>
+      <tr><td rowspan="4"><b>LED IR 940nm</b><br>(Emisor) +<br><b>2N2222</b></td><td>Base 2N2222</td><td><span style="color:#FF6B00;">D3</span></td><td>Via resistencia <b>1kΩ</b></td></tr>
+      <tr><td>Emisor 2N2222</td><td><span style="color:#999;">GND</span></td><td>Directo a GND</td></tr>
+      <tr><td>Colector 2N2222</td><td>Cátodo LED IR (−)</td><td>Conecta al negativo del LED</td></tr>
+      <tr><td>Ánodo LED IR (+)</td><td><span style="color:#FF6B00;">5V</span></td><td>Via resistencia <b>100Ω</b></td></tr>
+      <tr><td><b>Capacitor 100nF</b></td><td>Entre VCC y GND</td><td>Cerca del TSOP</td><td>Filtro de ruido</td></tr>
+    </table>
+
+    <div class="note ok">
+      ✅ <b>INPUT_PULLUP no aplica</b> — El TSOP da LOW cuando recibe haz, HIGH cuando se corta.
+      No necesita resistencias pull-up externas.
+    </div>
+  </div>
+
+  <!-- Diagrama visual -->
+  <div class="section">
+    <h2>🖼️ Diagrama de Conexión</h2>
+    <div class="diagram-box">
+┌────────────────────────────────────────────────────────────────────────────────┐
+│                           ARDUINO NANO V3 — PORTERÍA A                         │
+│                                                                                │
+│                                   5V ──┬───────────────────────────────┐        │
+│                                    │   │                               │        │
+│                                    │   [100Ω]                          │        │
+│                                    │    │                              │        │
+│                                    │    ├── Ánodo (+) LED IR 940nm     │        │
+│                                    │    │   Cátodo (−) ────────────────┤        │
+│                                    │    │                              │        │
+│                                    ├────┴── VCC (TSOP38438)            │        │
+│                                    │       OUT ─────────► D7           │        │
+│                                    │       GND ─────────► GND          │        │
+│                                    │          │                        │        │
+│                                    │      100nF (entre VCC y GND)      │        │
+│                                    │          │                        │        │
+│                                    ├────────────────── GND ────────────┼────┐   │
+│                                    │                                  │    │   │
+│                                   GND                                 │    │   │
+│                                                                        │    │   │
+│   D3 ──[1kΩ]──┬─ Base 2N2222 (NPN)                                     │    │   │
+│                │                                                       │    │   │
+│                ├─ Emisor ──────────────────────────────────────────────┘    │   │
+│                │                                                            │   │
+│                └─ Colector ── Cátodo LED IR (−) ────────────────────────────┘   │
+│                                                                                │
+│   ┌── USB mini ── PC (alimentación 5V + serial 9600 baud)                     │
+│                                                                                │
+│   COM3 → READY:A → GOAL:A                                                      │
+└────────────────────────────────────────────────────────────────────────────────┘</div>
+
+    <div class="diagram-box">
+  CÓMO FUNCIONA:
+  ┌─────────────────────────────────────────────────────────┐
+  │                                                         │
+  │   LED IR ──[haz 38kHz]──► TSOP38438                     │
+  │     │                        │                          │
+  │     │   🟢 HAZ PRESENTE      │ D7 = LOW                 │
+  │     │   (sin balón)          │                          │
+  │     │                        │                          │
+  │     │   ⚫ BALÓN CORTA HAZ    │ D7 = HIGH → 🥅 GOL!     │
+  │     │                        │                          │
+  │     │   🟢 BALÓN SALE         │ D7 = LOW → listo otra   │
+  │     │                        │     vez                  │
+  │     └────────────────────────┘                          │
+  │                                                         │
+  │   El haz IR va cruzando la portería a 2-4cm de fondo    │
+  └─────────────────────────────────────────────────────────┘</div>
+  </div>
+
+  <!-- Sketch Firmware -->
+  <div class="section">
+    <h2>💾 Firmware — Portería A</h2>
+    <div class="note warn">
+      ⚠️ Conectar el Nano por USB. Subir con Arduino IDE o arduino-cli.
+      Seleccionar placa: Arduino Nano · ATmega328P (Old Bootloader si es clon chino)
+    </div>
+    <div class="code-box">
+<span class="comment">/*</span>
+<span class="comment"> * RAX CARFUTBOLÍN — Portería A</span>
+<span class="comment"> * Arduino Nano V3 + TSOP38438 + LED IR 940nm</span>
+<span class="comment"> * Protocolo: READY:A → GOAL:A a 9600 baud</span>
+<span class="comment"> */</span>
+
+<span class="keyword">const byte</span> EMISOR_IR = <span class="num">3</span>;
+<span class="keyword">const byte</span> SENSOR_IR = <span class="num">7</span>;
+
+<span class="keyword">bool</span> hazAnterior = <span class="keyword">true</span>;
+<span class="keyword">bool</span> listo = <span class="keyword">true</span>;
+<span class="keyword">unsigned long</span> ultimoGol = <span class="num">0</span>;
+<span class="keyword">const unsigned long</span> BLOQUEO_GOL = <span class="num">700</span>;
+
+<span class="func">void</span> configurar38kHz() {
+  pinMode(EMISOR_IR, OUTPUT);
+  <span class="comment">// Timer2: ~38kHz por D3 (OC2B)</span>
+  TCCR2A = _BV(COM2B1) | _BV(WGM20) | _BV(WGM21);
+  TCCR2B = _BV(WGM22) | _BV(CS21);
+  OCR2A = <span class="num">209</span>;
+  OCR2B = <span class="num">105</span>;
+}
+
+<span class="func">void</span> setup() {
+  Serial.<span class="func">begin</span>(<span class="num">9600</span>);
+  pinMode(SENSOR_IR, INPUT);
+  <span class="func">configurar38kHz</span>();
+  delay(<span class="num">400</span>);
+
+  <span class="comment">// TSOP: LOW = recibiendo haz IR</span>
+  hazAnterior = (digitalRead(SENSOR_IR) == LOW);
+
+  Serial.<span class="func">println</span>(<span class="string">"READY:A"</span>);
+}
+
+<span class="func">void</span> loop() {
+  <span class="keyword">bool</span> haz = (digitalRead(SENSOR_IR) == LOW);
+  <span class="keyword">unsigned long</span> ahora = millis();
+
+  <span class="comment">// El balón cortó el haz → GOL</span>
+  <span class="keyword">if</span> (hazAnterior && !haz && listo
+      && (ahora - ultimoGol > BLOQUEO_GOL)) {
+
+    ultimoGol = ahora;
+    listo = <span class="keyword">false</span>;
+    Serial.<span class="func">println</span>(<span class="string">"GOAL:A"</span>);
+  }
+
+  <span class="comment">// Se rearma cuando el balón sale del haz</span>
+  <span class="keyword">if</span> (haz) listo = <span class="keyword">true</span>;
+
+  hazAnterior = haz;
+  delay(<span class="num">5</span>);
+}</div>
+  </div>
+
+  <!-- Materiales -->
+  <div class="section">
+    <h2>📦 Materiales por Portería</h2>
+    <table class="wiring-table">
+      <tr><th>Componente</th><th>Cantidad</th><th>Notas</th></tr>
+      <tr><td>Arduino Nano V3 (CH340)</td><td>1</td><td>Clon chino funciona, COM3/COM4</td></tr>
+      <tr><td>TSOP38438</td><td>1</td><td>Receptor IR 38kHz</td></tr>
+      <tr><td>LED IR 940nm</td><td>1</td><td>Emisor infrarrojo</td></tr>
+      <tr><td>Transistor 2N2222 / BC547</td><td>1</td><td>Driver del LED IR</td></tr>
+      <tr><td>Resistencia 1kΩ</td><td>1</td><td>Base del transistor</td></tr>
+      <tr><td>Resistencia 100Ω</td><td>1</td><td>Ánodo del LED IR</td></tr>
+      <tr><td>Capacitor 100nF</td><td>1</td><td>Filtro TSOP</td></tr>
+      <tr><td>Cable USB mini</td><td>1</td><td>Alimentación + serial</td></tr>
+    </table>
+  </div>
+
+  <!-- Notas -->
+  <div class="section">
+    <h2>⚠️ Notas Importantes</h2>
+
+    <div class="note ok">
+      ✅ <b>CH340 en Windows</b> — Los Nanos clon usan chip CH340. Windows los reconoce como
+      "USB-SERIAL CH340 (COMx)". Si no aparece, instalar driver CH340.
+    </div>
+
+    <div class="note warn">
+      ⚠️ <b>Identificar COM</b> — En RAX SOCIAL: COM3 = Portería A, COM4 = Portería B.
+      Si se reconectan, pueden cambiar. Usar etiqueta física en cada Nano.
+    </div>
+
+    <div class="note danger">
+      🔴 <b>No conectar LED sin resistencia</b> — El LED IR sin resistencia de 100Ω quema el LED
+      y puede dañar el pin del Arduino.
+    </div>
+
+    <div class="note warn">
+      ⚠️ <b>Old Bootloader</b> — Los Nanos clones chinos suelen usar "Old Bootloader"
+      (optiboot antiguo). Si la subida falla, seleccionar:
+      <code>Processor: ATmega328P (Old Bootloader)</code>
+    </div>
+
+    <div class="note">
+      🔌 <b>GND común</b> — Todos los GND deben estar conectados: Nano GND, TSOP GND,
+      emisor 2N2222, y el raíl negativo de la protoboard.
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:30px;color:#444;font-size:0.8em;">
+    RAX Experience · Carfutbolín · Julio 2026
+  </div>
+
+</div>
+</body>
+</html>

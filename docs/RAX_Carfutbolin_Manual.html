@@ -1,0 +1,483 @@
+1|<!DOCTYPE html>
+2|<html lang="es">
+3|<head>
+4|    <meta charset="UTF-8">
+5|    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+6|    <title>RAX Carfutbolín — Manual de Usuario</title>
+7|    <style>
+8|        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+9|        * { margin: 0; padding: 0; box-sizing: border-box; }
+10|        body {
+11|            font-family: 'Inter', -apple-system, sans-serif;
+12|            background: #050505;
+13|            color: #e0e0e0;
+14|            line-height: 1.7;
+15|        }
+16|        /* HEADER */
+17|        .hero {
+18|            background: linear-gradient(135deg, #050505 0%, #1a0000 50%, #050505 100%);
+19|            padding: 60px 20px 40px;
+20|            text-align: center;
+21|            border-bottom: 3px solid #da0000;
+22|        }
+23|        .hero img { width: 100px; height: 100px; margin-bottom: 15px; }
+24|        .hero h1 {
+25|            font-size: 2.8em; font-weight: 900;
+26|            color: #da0000; letter-spacing: -1px;
+27|        }
+28|        .hero p {
+29|            font-size: 1.1em; color: #a0a0a0; margin-top: 8px;
+30|        }
+31|        .hero .badge {
+32|            display: inline-block; margin-top: 12px;
+33|            background: #da0000; color: white; padding: 6px 20px;
+34|            border-radius: 20px; font-size: 0.85em; font-weight: 600;
+35|        }
+36|        /* NAV */
+37|        .toc {
+38|            max-width: 900px; margin: 30px auto; padding: 0 20px;
+39|        }
+40|        .toc h2 { color: #DB9651; font-size: 1.3em; margin-bottom: 12px; }
+41|        .toc-grid {
+42|            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+43|            gap: 10px;
+44|        }
+45|        .toc-grid a {
+46|            display: block; padding: 10px 14px;
+47|            background: #0d0d0d; border: 1px solid #222; border-radius: 8px;
+48|            color: #ccc; text-decoration: none; font-size: 0.9em; font-weight: 600;
+49|            transition: all 0.2s;
+50|        }
+51|        .toc-grid a:hover {
+52|            border-color: #da0000; color: white; background: #1a0a0a;
+53|        }
+54|        .toc-grid a span { color: #da0000; margin-right: 6px; }
+55|        /* CONTENT */
+56|        .container { max-width: 900px; margin: 0 auto; padding: 0 20px 60px; }
+57|        section { margin: 40px 0; }
+58|        section h2 {
+59|            font-size: 1.6em; font-weight: 800; color: #da0000;
+60|            border-bottom: 2px solid #222; padding-bottom: 8px; margin-bottom: 20px;
+61|        }
+62|        section h3 {
+63|            font-size: 1.15em; font-weight: 700; color: #DB9651;
+64|            margin: 20px 0 10px;
+65|        }
+66|        section h4 { color: #a0a0a0; font-weight: 600; margin: 14px 0 6px; }
+67|        section p { margin-bottom: 12px; color: #bbb; }
+68|        section ul, section ol { margin: 10px 0 15px 20px; color: #bbb; }
+69|        section li { margin-bottom: 6px; }
+70|        section strong { color: white; }
+71|        section code {
+72|            background: #1a1a1a; padding: 2px 8px; border-radius: 4px;
+73|            font-size: 0.9em; color: #ff6b6b;
+74|        }
+75|        pre {
+76|            background: #0a0a0a; border: 1px solid #222; border-left: 3px solid #da0000;
+77|            padding: 16px; border-radius: 8px; overflow-x: auto;
+78|            font-size: 0.85em; color: #ccc; margin: 12px 0;
+79|        }
+80|        /* CARDS */
+81|        .card {
+82|            background: #0d0d0d; border: 1px solid #222; border-radius: 12px;
+83|            padding: 20px; margin: 16px 0;
+84|        }
+85|        .card h4 { color: #DB9651; margin: 0 0 8px; }
+86|        .card table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+87|        .card th, .card td {
+88|            padding: 8px 12px; text-align: left; border-bottom: 1px solid #1a1a1a;
+89|            font-size: 0.9em;
+90|        }
+91|        .card th { color: #da0000; font-weight: 700; }
+92|        .card td { color: #bbb; }
+93|        .tag {
+94|            display: inline-block; padding: 2px 10px; border-radius: 12px;
+95|            font-size: 0.8em; font-weight: 600;
+96|        }
+97|        .tag-green { background: #0a2a0a; color: #4ade80; }
+98|        .tag-red { background: #2a0a0a; color: #f87171; }
+99|        .tag-yellow { background: #2a2a0a; color: #fbbf24; }
+100|        /* STEPS */
+101|        .step {
+102|            display: flex; gap: 15px; margin: 14px 0; padding: 14px 16px;
+103|            background: #0a0a0a; border-radius: 10px; border-left: 3px solid #da0000;
+104|        }
+105|        .step-num {
+106|            width: 32px; height: 32px; min-width: 32px;
+107|            background: #da0000; color: white; border-radius: 50%;
+108|            display: flex; align-items: center; justify-content: center;
+109|            font-weight: 800; font-size: 0.9em;
+110|        }
+111|        .step-body { flex: 1; }
+112|        .step-body p { margin: 0; color: #ccc; }
+113|        .step-body p strong { color: white; }
+114|        /* FOOTER */
+115|        .footer {
+116|            text-align: center; padding: 30px 20px;
+117|            border-top: 1px solid #1a1a1a; color: #555; font-size: 0.85em;
+118|        }
+119|        .footer strong { color: #888; }
+120|        /* RESPONSIVE */
+121|        @media (max-width: 600px) {
+122|            .hero h1 { font-size: 1.8em; }
+123|            .toc-grid { grid-template-columns: 1fr; }
+124|            .step { flex-direction: column; }
+125|        }
+126|        /* WARNINGS */
+127|        .warning {
+128|            background: #2a1a00; border: 1px solid #DB9651; border-radius: 8px;
+129|            padding: 14px 18px; margin: 12px 0;
+130|        }
+131|        .warning strong { color: #DB9651; }
+132|        .info {
+133|            background: #001a2a; border: 1px solid #4a9eff; border-radius: 8px;
+134|            padding: 14px 18px; margin: 12px 0;
+135|        }
+136|        .info strong { color: #4a9eff; }
+137|    </style>
+138|</head>
+139|<body>
+140|
+141|<!-- ==================== HERO ==================== -->
+142|<header class="hero">
+143|    <img src="https://raw.githubusercontent.com/ivanaval27/raxexperience-site/main/public/logo192.png"
+144|         alt="RAX Experience" onerror="this.style.display='none'">
+145|    <h1>RAX CARFUTBOLÍN</h1>
+146|    <p>Sistema de detección de goles para fútbol de mesa</p>
+147|    <span class="badge">v2.4 · RAX Corp</span>
+148|</header>
+149|
+150|<!-- ==================== TOC ==================== -->
+151|<nav class="toc">
+152|    <h2>📋 Contenido</h2>
+153|    <div class="toc-grid">
+154|        <a href="#requisitos"><span>1</span> Requisitos</a>
+155|        <a href="#instalacion"><span>2</span> Instalación</a>
+156|        <a href="#configuracion"><span>3</span> Configuración</a>
+157|        <a href="#funcionamiento"><span>4</span> Funcionamiento</a>
+158|        <a href="#sonidos"><span>5</span> Sonidos</a>
+159|        <a href="#solucion"><span>6</span> Solución de Problemas</a>
+160|        <a href="#sdd"><span>7</span> Flujo SDD</a>
+161|    </div>
+162|</nav>
+163|
+164|<!-- ==================== CONTENT ==================== -->
+165|<div class="container">
+166|
+167|<!-- 1. REQUISITOS -->
+168|<section id="requisitos">
+169|    <h2>1. Requisitos del Sistema</h2>
+170|
+171|    <div class="card">
+172|        <h4>🖥️ Hardware</h4>
+173|        <table>
+174|            <tr><th>Componente</th><th>Especificación</th></tr>
+175|            <tr><td>PC</td><td>Windows 10/11, 1GB+ RAM, puerto USB</td></tr>
+176|            <tr><td>Arduino Nano × 2</td><td>ATmega328P, Old Bootloader, CH340</td></tr>
+177|            <tr><td>Sensor IR × 2</td><td>TSOP38438 (38kHz)</td></tr>
+178|            <tr><td>LED IR × 2</td><td>940nm, 100Ω ánodo → 5V</td></tr>
+179|            <tr><td>Transistor × 2</td><td>2N2222 (driver LED), 1kΩ base</td></tr>
+180|        </table>
+181|    </div>
+182|
+183|    <div class="card">
+184|        <h4>💾 Software</h4>
+185|        <table>
+186|            <tr><th>Programa</th><th>Uso</th></tr>
+187|            <tr><td>RAX Carfutbolin.exe</td><td>Aplicación principal</td></tr>
+188|            <tr><td>Arduino IDE</td><td>Cargar firmware a los Arduinos</td></tr>
+189|            <tr><td>makensis (NSIS)</td><td>Compilar instalador (solo para developer)</td></tr>
+190|        </table>
+191|    </div>
+192|</section>
+193|
+194|<!-- 2. INSTALACIÓN -->
+195|<section id="instalacion">
+196|    <h2>2. Instalación</h2>
+197|
+198|    <h3>2.1 Instalación del Programa</h3>
+199|    <p>Usá el instalador <strong>RAX_Carfutbolin_Setup.exe</strong> incluido en el paquete de distribución.</p>
+200|
+201|    <div class="step">
+202|        <div class="step-num">1</div>
+203|        <div class="step-body">
+204|            <p><strong>Ejecutá</strong> el instalador como Administrador (click derecho → "Ejecutar como administrador").</p>
+205|        </div>
+206|    </div>
+207|    <div class="step">
+208|        <div class="step-num">2</div>
+209|        <div class="step-body">
+210|            <p>Hacé click en <strong>Siguiente</strong> en la pantalla de bienvenida.</p>
+211|        </div>
+212|    </div>
+213|    <div class="step">
+214|        <div class="step-num">3</div>
+215|        <div class="step-body">
+216|            <p>Aceptá los términos de la <strong>licencia</strong> y hacé click en Siguiente.</p>
+217|        </div>
+218|    </div>
+219|    <div class="step">
+220|        <div class="step-num">4</div>
+221|        <div class="step-body">
+222|            <p>Elegí la carpeta de instalación (recomendado: dejar la que viene por defecto) y hacé click en <strong>Instalar</strong>.</p>
+223|        </div>
+224|    </div>
+225|    <div class="step">
+226|        <div class="step-num">5</div>
+227|        <div class="step-body">
+228|            <p>Hacé click en <strong>Finalizar</strong>. El programa se abre automáticamente si dejás marcada la opción.</p>
+229|        </div>
+230|    </div>
+231|
+232|    <div class="info">
+233|        <strong>💡 Nota:</strong> El instalador crea un acceso directo en el Escritorio y en el Menú Inicio. Si preferís no instalar, podés ejecutar directamente <code>RAX Carfutbolin.exe</code> desde cualquier carpeta.
+234|    </div>
+235|
+236|    </section>
+274|
+275|<!-- 3. CONFIGURACIÓN -->
+276|<section id="configuracion">
+277|    <h2>3. Configuración Inicial</h2>
+278|
+279|    <p>Al abrir la aplicación por primera vez, se muestra la ventana de configuración.</p>
+280|
+281|    <div class="card">
+282|        <h4>⚙️ Ventana de Configuración</h4>
+283|        <table>
+284|            <tr><th>Campo</th><th>Descripción</th></tr>
+285|            <tr><td>⬜ Equipo NEGRO</td><td>Seleccionar el puerto COM de la Portería A</td></tr>
+286|            <tr><td>🔴 Equipo ROJO</td><td>Seleccionar el puerto COM de la Portería B</td></tr>
+287|            <tr><td>⏱ Tiempo por tiempo</td><td>Duración de cada tiempo (1-30 min, defecto: 4)</td></tr>
+288|            <tr><td>☕ Tiempo de descanso</td><td>Duración del descanso entre tiempos (1-15 min, defecto: 4)</td></tr>
+289|        </table>
+290|    </div>
+291|
+292|    <div class="step">
+293|        <div class="step-num">1</div>
+294|        <div class="step-body">
+295|            <p>Seleccioná los <strong>puertos COM</strong> de cada equipo en los menús desplegables.</p>
+296|        </div>
+297|    </div>
+298|    <div class="step">
+299|        <div class="step-num">2</div>
+300|        <div class="step-body">
+301|            <p>Hacé click en <strong>🔄 REFRESCAR PUERTOS</strong> si no aparecen.</p>
+302|        </div>
+303|    </div>
+304|    <div class="step">
+305|        <div class="step-num">3</div>
+306|        <div class="step-body">
+307|            <p>Ajustá los tiempos de juego y descanso.</p>
+308|        </div>
+309|    </div>
+310|    <div class="step">
+311|        <div class="step-num">4</div>
+312|        <div class="step-body">
+313|            <p>Hacé click en <strong>💾 GUARDAR CONFIG</strong> para que los ajustes se recuerden la próxima vez.</p>
+314|        </div>
+315|    </div>
+316|    <div class="step">
+317|        <div class="step-num">5</div>
+318|        <div class="step-body">
+319|            <p>Hacé click en <strong>⚽ INICIAR PARTIDO</strong> para comenzar.</p>
+320|        </div>
+321|    </div>
+322|
+323|    <div class="info">
+324|        <strong>💡 Consejo:</strong> La configuración se guarda en <code>%LOCALAPPDATA%\RAX Carfutbolin\settings.json</code>. Si querés resetear los valores, borrá ese archivo.
+325|    </div>
+326|</section>
+327|
+328|<!-- 4. FUNCIONAMIENTO -->
+329|<section id="funcionamiento">
+330|    <h2>4. Funcionamiento del Partido</h2>
+331|
+332|    <h3>4.1 Interfaz Principal</h3>
+333|    <p>La ventana principal del partido tiene la siguiente distribución:</p>
+334|
+335|    <pre>
+336|┌──────┬──────────────────────────────────┬─────────────┐
+337|│ LOGO │ RAX CARFUTBOLÍN              ⛶ │             │
+338|│ 80px ├──────────────────────────────────┤ 📋 GOLES    │
+339|│      │       4:00                       │             │
+340|│      │  ⚪ NEGRO  VS  🔴 ROJO          │ ⚪ NEGRO    │
+341|│      │     0             0              │  · #1 2:30  │
+342|│      │                                  │  · #2 0:45  │
+343|│      │ [⏯ INICIAR] [☐ DESCANSO]       │─────────────│
+344|│      │ [🔄 RESET]  [⌨️ TECLADO]        │ 🔴 ROJO     │
+345|│      │ [🔄 CAMBIO LADO] [⏹ SALIR]     │  · #1 1:15  │
+346|│      │                                  │             │
+347|│      │ © 2026 RAX Experience · Powered  │             │
+348|│      │   by Iván Nava                   │             │
+349|└──────┴──────────────────────────────────┴─────────────┘
+350|    </pre>
+351|
+352|    <h3>4.2 Controles</h3>
+353|    <div class="card">
+354|        <table>
+355|            <tr><th>Control</th><th>Función</th></tr>
+356|            <tr><td>⏯ INICIAR PARTIDO</td><td>Inicia el primer tiempo / Continúa después del descanso</td></tr>
+357|            <tr><td>☐ DESCANSO</td><td>Pausa el partido para ir a descanso (solo durante 1er tiempo)</td></tr>
+358|            <tr><td>🔄 RESET</td><td>Reinicia el partido desde cero</td></tr>
+359|            <tr><td>⌨️ TECLADO</td><td>Simular gol manual (para pruebas)</td></tr>
+360|            <tr><td>🔄 CAMBIO LADO</td><td>Intercambia los equipos de lado</td></tr>
+361|            <tr><td>⏹ SALIR</td><td>Cierra la aplicación</td></tr>
+362|            <tr><td>⛶ / 🗖</td><td>Alternar pantalla completa / ventana</td></tr>
+363|            <tr><td>Barra espaciadora</td><td>Iniciar / Continuar partido</td></tr>
+364|            <tr><td>Escape</td><td>Salir de pantalla completa</td></tr>
+365|            <tr><td>F11</td><td>Entrar en pantalla completa</td></tr>
+366|        </table>
+367|    </div>
+368|
+369|    <h3>4.3 Flujo del Partido</h3>
+370|    <pre>
+371|     INICIAR
+372|        │
+373|        ▼
+374|  ┌─────────────────┐
+375|  │  1ER TIEMPO     │  ← Cuenta regresiva desde X:00
+376|  │  (configurable) │
+377|  └────────┬────────┘
+378|           │  ⏱ Llega a 0:00
+379|           ▼
+380|  ┌─────────────────┐
+381|  │ ☕ DESCANSO     │  ← Automático
+382|  │  (configurable) │
+383|  └────────┬────────┘
+384|           │  ⏱ Llega a 0:00
+385|           ▼
+386|  ┌─────────────────┐
+387|  │  2DO TIEMPO     │  ← Se invierten los lados
+388|  │  (configurable) │
+389|  └────────┬────────┘
+390|           │  ⏱ Llega a 0:00
+391|           ▼
+392|  ┌─────────────────┐
+393|  │ 🏁 FINALIZADO   │  ← Muestra el ganador
+394|  │  🏆 GANADOR     │
+395|  └─────────────────┘
+396|    </pre>
+397|
+398|    <h3>4.4 Celebración de Gol</h3>
+399|    <p>Cuando se detecta un gol:</p>
+400|    <ul>
+401|        <li>🔊 Suena el archivo <code>sounds/gol_equipo.wav</code> (si existe)</li>
+402|        <li>🔥 Aparece un <strong>overlay a pantalla completa</strong> con el equipo que anotó</li>
+403|        <li>✨ El overlay tiene un efecto de <strong>destello</strong> (parpadeo suave)</li>
+404|        <li>📝 Se registra en el historial: minuto, segundo y tiempo del gol</li>
+405|        <li>⏱ La celebración dura 3 segundos y se cierra sola</li>
+406|    </ul>
+407|
+408|    
+411|</section>
+412|
+413|<!-- 5. SONIDOS -->
+414|<section id="sonidos">
+415|    <h2>5. Sonidos Personalizados</h2>
+416|
+417|    <p>Podés agregar sonidos creando la carpeta <code>sounds/</code> junto al ejecutable.</p>
+418|
+419|    <pre>
+420|📂 C:\Program Files\RAX Carfutbolín\
+421|├── RAX Carfutbolin.exe
+422|└── 📁 sounds/            ← Crear esta carpeta
+423|    ├── inicio.wav        ← Suena al iniciar partido
+424|    ├── gol.wav           ← Suena en cualquier gol
+425|    ├── gol_negro.wav     ← Suena solo si anota NEGRO
+426|    ├── gol_rojo.wav      ← Suena solo si anota ROJO
+427|    └── final.wav         ← Suena al terminar partido
+428|    </pre>
+429|
+430|    <div class="info">
+431|        <strong>💡 Nota:</strong> Todos los sonidos son <strong>opcionales</strong>. Si la carpeta no existe o falta algún archivo, la aplicación funciona sin sonido.
+432|    </div>
+433|</section>
+434|
+435|<!-- 6. SOLUCIÓN DE PROBLEMAS -->
+436|<section id="solucion">
+437|    <h2>6. Solución de Problemas</h2>
+438|
+439|    <div class="card">
+440|        <h4>🔴 "No se detectan puertos COM"</h4>
+441|        <p><strong>Causa:</strong> Los Arduinos no están conectados o el driver CH340 no está instalado.</p>
+442|        <p><strong>Solución:</strong> Verificá que los Arduinos aparezcan en el Administrador de Dispositivos. Si aparecen como "Dispositivo desconocido", instalá el driver CH340.</p>
+443|    </div>
+444|
+445|    <div class="card">
+446|        <h4>🔴 "Error de permisos al ejecutar"</h4>
+447|        <p><strong>Causa:</strong> La app intenta escribir <code>settings.json</code> en una carpeta sin permisos.</p>
+448|        <p><strong>Solución:</strong> Usá el instalador en lugar de ejecutar el .exe directamente. Si ya está instalada, los archivos se guardan en <code>%LOCALAPPDATA%</code>.</p>
+449|    </div>
+450|
+451|    <div class="card">
+452|        <h4>🔴 "El gol no se detecta"</h4>
+453|        <p><strong>Causas posibles:</strong></p>
+454|        <ul>
+455|            <li>El LED IR no está apuntando correctamente al TSOP38438</li>
+456|            <li>Los puertos COM están invertidos (NEGRO vs ROJO)</li>
+457|            <li>El firmware no se cargó con <strong>Old Bootloader</strong></li>
+458|            <li>El balón no interrumpe el haz IR el tiempo suficiente</li>
+459|        </ul>
+460|    </div>
+461|
+462|    <div class="card">
+463|        <h4>🔴 "Se detectan goles falsos"</h4>
+464|        <p><strong>Causa:</strong> Ruido eléctrico o interferencia en el sensor IR.</p>
+465|        <p><strong>Solución:</strong> Verificá que el capacitor de 100nF esté cerca del TSOP38438. Asegurate que no haya luces infrarrojas cerca (controles remotos, sensores de movimiento).</p>
+466|    </div>
+467|
+468|    <div class="card">
+469|        <h4>🔴 "La columna ROJO no aparece en el historial"</h4>
+470|        <p><strong>Causa:</strong> Bug de versión anterior ya corregido en v2.4.</p>
+471|        <p><strong>Solución:</strong> Descargá la última versión del instalador o recompilá con el código actualizado.</p>
+472|    </div>
+473|
+474|    <div class="card">
+475|        <h4>🔴 "Error: makensis no se reconoce"</h4>
+476|        <p><strong>Causa:</strong> NSIS no está instalado en el sistema.</p>
+477|        <p><strong>Solución:</strong> Ejecutá en PowerShell como Administrador: <code>winget install "NSIS.NSIS"</code></p>
+478|    </div>
+479|
+480|    <h3>Archivos de Log</h3>
+481|    <p>Ante cualquier error, revisá el archivo de log:</p>
+482|    <pre>%LOCALAPPDATA%\RAX Carfutbolin\carfutbolin.log</pre>
+483|    <p>Allí se registran: conexiones COM, goles detectados, errores y eventos del partido.</p>
+484|</section>
+485|
+486|<!-- 7. FLUJO SDD -->
+487|<section id="sdd">
+488|    <h2>7. Flujo de Desarrollo (SDD)</h2>
+489|
+490|    <p>RAX Carfutbolín se desarrolla bajo el flujo <strong>SDD (Specification Driven Development)</strong> de RAX Corp. Todos los cambios pasan por:</p>
+491|
+492|    <pre>
+493|Iván → Orquestador → SDD Init → Vulcan (SPEC)
+494|      → Murrow (UI/UX) → Depto aplica (Ayrton)
+495|      → Alan (review) → Archive → Commit
+496|    </pre>
+497|
+498|    <div class="card">
+499|        <h4>🏢 Departamentos RAX</h4>
+500|        <table>
+501|            <tr><th>Depto</th><th>Rol</th></tr>
+502|            <tr><td>👁️ Vulcan</td><td>Especificación técnica (SPEC)</td></tr>
+503|            <tr><td>🎨 Murrow</td><td>Diseño de interfaz (UI/UX)</td></tr>
+504|            <tr><td>🏎️ Ayrton</td><td>Código e implementación</td></tr>
+505|            <tr><td>🧠 Alan</td><td>Auditoría y revisión</td></tr>
+506|            <tr><td>🗂️ Scribe</td><td>Git, archivo y documentación</td></tr>
+507|        </table>
+508|    </div>
+509|</section>
+510|
+511|</div>
+512|
+513|<!-- ==================== FOOTER ==================== -->
+514|<footer class="footer">
+515|    <p><strong>RAX Carfutbolín v2.4</strong> — Sistema de detección de goles para fútbol de mesa</p>
+516|    <p>© 2026 RAX Experience · Todos los derechos reservados · Powered by Iván Nava</p>
+517|    <p style="margin-top:6px;font-size:0.8em">Desarrollado bajo flujo SDD — RAX Corp</p>
+518|</footer>
+519|
+520|</body>
+521|</html>
+522|
