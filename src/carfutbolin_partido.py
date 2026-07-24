@@ -111,17 +111,29 @@ class LectorSerial(threading.Thread):
         self.ready = False  # B2: solo contar goles después de READY
 
     def run(self):
+        # Reintentar conexión al Arduino (puede resetearse al abrir)
+        for intento in range(3):
+            try:
+                self.ser = serial.Serial(self.puerto, self.baud, timeout=0.5)
+                time.sleep(3.5)  # Esperar a que el Old Bootloader termine (DTR reset)
+                self.conectado = True
+                logging.info(f"[{self.nombre}] Puerto {self.puerto} conectado (intento {intento+1})")
+                break
+            except Exception as e:
+                logging.warning(f"[{self.nombre}] Intento {intento+1} fallido: {e}")
+                time.sleep(1)
+        else:
+            if self.callback_error:
+                self.callback_error(self.nombre, "No se pudo abrir el puerto tras 3 intentos")
+            return
+
         try:
-            self.ser = serial.Serial(self.puerto, self.baud, timeout=0.5)
-            time.sleep(2.5)
-            self.conectado = True
-            logging.info(f"[{self.nombre}] Puerto {self.puerto} conectado")
 
             # B2: Esperar mensaje READY del Arduino
             timeout_ready = time.time() + 10  # 10s de timeout
             while self.running and not self.ready:
                 if self.ser and self.ser.in_waiting:
-                    linea = self.ser.readline().decode().strip()
+                    linea = self.ser.readline().decode(errors='replace').strip()
                     if "READY" in linea:
                         self.ready = True
                         logging.info(f"[{self.nombre}] READY recibido — sistema listo")
@@ -134,7 +146,7 @@ class LectorSerial(threading.Thread):
             # Bucle principal de detección de goles
             while self.running:
                 if self.ser and self.ser.in_waiting:
-                    linea = self.ser.readline().decode().strip()
+                    linea = self.ser.readline().decode(errors='replace').strip()
                     if "GOAL" in linea and self.ready:  # B2: ignorar si no ready
                         logging.info(f"[{self.nombre}] GOAL detectado")
                         self.callback(self.nombre)

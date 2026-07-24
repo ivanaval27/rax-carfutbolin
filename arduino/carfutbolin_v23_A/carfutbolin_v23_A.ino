@@ -21,14 +21,11 @@ bool esperandoRearme = false;
 // --- Interrupción por cambio de pin (PCINT) en pin 7 ---
 // Pin 7 = PD7 = PCINT23, grupo PCIE2
 volatile bool hazRoto = false;
-unsigned long hazRotoTime = 0;     // Timestamp del ISR para debounce
-const unsigned long DEBOUNCE_GOL = 5;  // 5ms de confirmación
 
 ISR(PCINT2_vect) {
   // PD7 HIGH = haz roto (TSOP38438 suelta la línea cuando no ve carrier)
   if (PIND & (1 << PD7)) {
     hazRoto = true;
-    hazRotoTime = millis();
   }
 }
 
@@ -66,19 +63,13 @@ void loop() {
     return;                // sin delay — el loop vuela
   }
 
-  // --- Detección de gol vía interrupción con debounce ---
-  if (hazRoto && (ahora - hazRotoTime >= DEBOUNCE_GOL)) {
+  // --- Detección de gol vía interrupción ---
+  if (hazRoto && (ahora > cooldownHasta)) {
     hazRoto = false;
-    // Re-verificar: ¿el haz sigue roto después del debounce?
-    if (digitalRead(SENSOR_IR) != LOW) {
-      return;  // Falso positivo — el haz ya se restauró, ignorar
-    }
-    if (ahora > cooldownHasta) {
-      cooldownHasta = ahora + COOLDOWN_GOL;
-      esperandoRearme = true;
-      inicioHazEstable = 0;
-      Serial.println("GOAL:A");
-    }
+    cooldownHasta = ahora + COOLDOWN_GOL;
+    esperandoRearme = true;
+    inicioHazEstable = 0;
+    Serial.println("GOAL:A");
   }
 
   // --- Esperar haz estable para rearmar ---
