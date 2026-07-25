@@ -20,12 +20,18 @@ import ctypes
 # ============================================================
 # CONFIGURACIÓN
 # ============================================================
-# Ruta a carpeta sounds/ junto al .exe
+# Ruta a carpeta sounds/ — busca en varias ubicaciones
 if getattr(sys, 'frozen', False):
     DIR_APP = os.path.dirname(sys.executable)
 else:
     DIR_APP = os.path.dirname(os.path.abspath(__file__))
 DIR_SOUNDS = os.path.join(DIR_APP, "sounds")
+# Fallback: buscar en instalación de Program Files
+if not os.path.isdir(DIR_SOUNDS):
+    DIR_SOUNDS_PROG = os.path.join(os.environ.get("ProgramFiles", "C:\\Program Files"), 
+                                    "RAX Carfutbolín", "sounds")
+    if os.path.isdir(DIR_SOUNDS_PROG):
+        DIR_SOUNDS = DIR_SOUNDS_PROG
 DIR_DATA = os.path.join(os.environ.get('LOCALAPPDATA', DIR_APP), "RAX Carfutbolin")
 os.makedirs(DIR_DATA, exist_ok=True)
 SETTINGS_FILE = os.path.join(DIR_DATA, "settings.json")
