@@ -1061,7 +1061,7 @@ class AppPartido:
         self.btn_descanso.config(state="disabled", bg="#333", fg="#ccc")
         self.btn_pausa.config(state="normal")
         self.btn_iniciar.config(state="disabled", text="▶ JUGANDO")
-        self._reproducir_sonido("inicio.wav")
+        self._reproducir_sonido("inicio2.wav")
         logging.info(f"SEGUNDO TIEMPO INICIADO ({self.MINUTOS_PARTIDO} min)")
 
     def _iniciar_timer(self):
