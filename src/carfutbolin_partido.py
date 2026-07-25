@@ -1,7 +1,7 @@
 """
 RAX Carfutbolín — Sistema de Partido
 v2.0 — Selección de puertos COM, equipos Negro vs Azul
-Compilar: pyinstaller --onefile --windowed --name "RAX Carfutbolin" carfutbolin_partido.py
+Compilar: pyinstaller --onefile --windowed --name "CarFutbolin" carfutbolin_partido.py
 """
 
 import tkinter as tk
@@ -32,7 +32,7 @@ if not os.path.isdir(DIR_SOUNDS):
                                     "RAX Carfutbolín", "sounds")
     if os.path.isdir(DIR_SOUNDS_PROG):
         DIR_SOUNDS = DIR_SOUNDS_PROG
-DIR_DATA = os.path.join(os.environ.get('LOCALAPPDATA', DIR_APP), "RAX Carfutbolin")
+DIR_DATA = os.path.join(os.environ.get('LOCALAPPDATA', DIR_APP), "CarFutbolin")
 os.makedirs(DIR_DATA, exist_ok=True)
 SETTINGS_FILE = os.path.join(DIR_DATA, "settings.json")
 
@@ -74,7 +74,7 @@ logging.basicConfig(
     format='%(asctime)s [%(levelname)s] %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
 )
-logging.info("=== RAX Carfutbolin iniciado ===")
+logging.info("=== CarFutbolin iniciado ===")
 
 MINUTOS_PARTIDO = 4
 MINUTOS_DESCANSO = 4
@@ -91,10 +91,11 @@ COLOR_AZUL_OSCURO = "#08081f"  # Fondo para columna AZUL en historial
 # ============================================================
 # ESTADOS DEL PARTIDO
 # ============================================================
-IDLE, PRIMER_TIEMPO, DESCANSO, SEGUNDO_TIEMPO, FINALIZADO = range(5)
+IDLE, PRIMER_TIEMPO, PAUSADO, DESCANSO, SEGUNDO_TIEMPO, FINALIZADO = range(6)
 ESTADOS = {
     IDLE: "LISTO",
     PRIMER_TIEMPO: "1ER TIEMPO",
+    PAUSADO: "PAUSADO",
     DESCANSO: "DESCANSO",
     SEGUNDO_TIEMPO: "2DO TIEMPO",
     FINALIZADO: "FINALIZADO"
@@ -186,7 +187,7 @@ class LectorSerial(threading.Thread):
 class VentanaConfig:
     def __init__(self):
         self.ventana = tk.Tk()
-        self.ventana.title("RAX Carfutbolín — Configuración")
+        self.ventana.title("CarFutbolin — Configuración")
         self.ventana.configure(bg=COLOR_BG)
         self.ventana.geometry("520x580")
         self.ventana.minsize(520, 580)
@@ -410,7 +411,7 @@ class AppPartido:
         self.MINUTOS_DESCANSO = minutos_descanso
 
         self.ventana = tk.Tk()
-        self.ventana.title("RAX Carfutbolín")
+        self.ventana.title("CarFutbolin")
         self.ventana.configure(bg=COLOR_BG)
         self.fullscreen = False
         self._saved_geometry = None
@@ -426,6 +427,8 @@ class AppPartido:
         self.ventana.bind("N", lambda e: self._gol_manual("NEGRO"))
         self.ventana.bind("a", lambda e: self._gol_manual("AZUL"))
         self.ventana.bind("A", lambda e: self._gol_manual("AZUL"))
+        self.ventana.bind("p", lambda e: self._toggle_pausa())
+        self.ventana.bind("P", lambda e: self._toggle_pausa())
         try:
             self.ventana.iconbitmap(default=os.path.join(
                 os.path.dirname(os.path.abspath(__file__)), "rax_carfutbolin.ico"))
@@ -434,6 +437,7 @@ class AppPartido:
 
         # Estado del partido
         self.estado = IDLE
+        self.estado_pausa_anterior = None
         self.tiempo_restante = self.MINUTOS_PARTIDO * 60
         self.goles_negro = 0
         self.goles_azul = 0
@@ -629,6 +633,12 @@ class AppPartido:
                                      pady=6, cursor="hand2", state="disabled",
                                      command=self._iniciar_segundo_tiempo)
         self.btn_segundo.pack(side="left", padx=3)
+        self.btn_pausa = tk.Button(btn_frame, text="⏸ PAUSA",
+                                     font=self.fnt_btn, bg="#E67E22", fg="white",
+                                     activebackground="#d35400", bd=0, padx=12,
+                                     pady=6, cursor="hand2", state="disabled",
+                                     command=self._toggle_pausa)
+        self.btn_pausa.pack(side="left", padx=3)
         tk.Button(btn_frame, text="🔄 RESET", font=self.fnt_btn, bg="#333",
                   fg="#ccc", activebackground="#555", bd=0, padx=10,
                   pady=6, cursor="hand2", command=self._reset).pack(side="left", padx=3)
@@ -650,7 +660,7 @@ class AppPartido:
         self.lbl_com_azul.pack(side="right", padx=8)
 
         # Footer
-        tk.Label(left, text="© 2026 RAX Experience · Todos los derechos reservados · Powered by Iván Nava",
+        tk.Label(left, text="© 2026 CarFutbolin · Todos los derechos reservados · Powered by Iván Nava",
                  font=("Segoe UI", 8), fg="#555", bg=COLOR_BG).pack(side="bottom", pady=2)
 
         # === LADO DERECHO: Historial ===
@@ -706,11 +716,15 @@ class AppPartido:
         """Gol manual por teclado (N=Negro, A=Azul)"""
         if self.estado not in (PRIMER_TIEMPO, SEGUNDO_TIEMPO):
             return
+        if self.estado == PAUSADO:
+            return
         logging.info(f"[{equipo}] GOL MANUAL (teclado)")
         self._gol_detectado(equipo)
 
     def _gol_detectado(self, equipo):
         if self.estado not in (PRIMER_TIEMPO, SEGUNDO_TIEMPO):
+            return
+        if self.estado == PAUSADO:
             return
 
         # N2: Cooldown en Python — defensa en profundidad
@@ -783,9 +797,11 @@ class AppPartido:
         ruta = os.path.join(DIR_SOUNDS, nombre)
         if os.path.exists(ruta):
             try:
-                winsound.PlaySound(ruta, winsound.SND_ASYNC)
-            except:
-                pass
+                winsound.PlaySound(ruta, winsound.SND_FILENAME | winsound.SND_ASYNC)
+            except Exception as e:
+                logging.warning(f"Error reproduciendo {ruta}: {e}")
+        else:
+            logging.warning(f"Audio no encontrado: {ruta}")
 
     def _celebrar_gol(self, equipo, color):
         """Overlay de celebración tipo flash"""
@@ -991,7 +1007,9 @@ class AppPartido:
         if self.estado == IDLE:
             self._iniciar_partido()
         elif self.estado == PRIMER_TIEMPO:
-            pass
+            self._toggle_pausa()
+        elif self.estado == PAUSADO:
+            self._toggle_pausa()
         elif self.estado == DESCANSO:
             self._iniciar_segundo_tiempo()
 
@@ -1006,6 +1024,7 @@ class AppPartido:
         self._iniciar_timer()
         self.btn_iniciar.config(state="disabled", text="▶ JUGANDO")
         self.btn_descanso.config(state="normal", bg=COLOR_ROJO_RAX, fg="white")
+        self.btn_pausa.config(state="normal")
         # Sonido inicio
         self._reproducir_sonido("inicio.wav")
         logging.info(f"PARTIDO INICIADO — 1er tiempo ({self.MINUTOS_PARTIDO} min)")
@@ -1020,6 +1039,7 @@ class AppPartido:
         self._actualizar_ui()
         self.btn_descanso.config(state="disabled", bg="#333", fg="#ccc")
         self.btn_segundo.config(state="normal")
+        self.btn_pausa.config(state="disabled")
         self.btn_iniciar.config(state="normal", text="▶ CONTINUAR")
         logging.info(f"DESCANSO INICIADO ({self.MINUTOS_DESCANSO} min)")
         self._reproducir_sonido("descanso.wav")
@@ -1039,6 +1059,7 @@ class AppPartido:
         self._iniciar_timer()
         self.btn_segundo.config(state="disabled")
         self.btn_descanso.config(state="disabled", bg="#333", fg="#ccc")
+        self.btn_pausa.config(state="normal")
         self.btn_iniciar.config(state="disabled", text="▶ JUGANDO")
         logging.info(f"SEGUNDO TIEMPO INICIADO ({self.MINUTOS_PARTIDO} min)")
 
@@ -1089,6 +1110,7 @@ class AppPartido:
             self.lbl_half.config(text="☐ DESCANSO")
             self.btn_descanso.config(state="disabled", bg="#333", fg="#ccc")
             self.btn_segundo.config(state="normal")
+            self.btn_pausa.config(state="disabled")
             self.lbl_gol.config(text="☕ DESCANSO — 2do tiempo en breve...", fg=COLOR_ROJO_RAX)
             self._actualizar_ui()
             # Iniciar descanso automático
@@ -1102,6 +1124,7 @@ class AppPartido:
         elif self.estado == SEGUNDO_TIEMPO:
             self.estado = FINALIZADO
             self.lbl_half.config(text="🏁 PARTIDO FINALIZADO")
+            self.btn_pausa.config(state="disabled")
             self._mostrar_resultado()
             self._actualizar_ui()
             logging.info(f"PARTIDO FINALIZADO — Score final: NEGRO {self.goles_negro} / AZUL {self.goles_azul}")
@@ -1116,6 +1139,30 @@ class AppPartido:
 
         self.lbl_gol.config(text=f"🏆 GANADOR: {ganador} 🏆", fg=COLOR_ROJO_RAX)
         self._reproducir_sonido("final.wav")
+
+    def _toggle_pausa(self):
+        if self.estado == PAUSADO:
+            self._reanudar()
+        elif self.estado in (PRIMER_TIEMPO, SEGUNDO_TIEMPO):
+            self._pausar()
+
+    def _pausar(self):
+        self._detener_timer()
+        self.estado_pausa_anterior = self.estado
+        self.estado = PAUSADO
+        self.lbl_half.config(text="⏸ PAUSADO")
+        self.btn_pausa.config(text="▶ REANUDAR", bg="#27AE60")
+        self.lbl_tiempo.config(fg="#E67E22")
+        self._actualizar_ui()
+        logging.info("PARTIDO PAUSADO")
+
+    def _reanudar(self):
+        self.estado = self.estado_pausa_anterior
+        self.lbl_half.config(text="1ER TIEMPO" if self.estado == PRIMER_TIEMPO else "2DO TIEMPO")
+        self.btn_pausa.config(text="⏸ PAUSA", bg="#E67E22")
+        self._actualizar_ui()
+        self._iniciar_timer()
+        logging.info("PARTIDO REANUDADO")
 
     def _reset(self):
         self._detener_timer()
@@ -1139,13 +1186,15 @@ class AppPartido:
         self.btn_iniciar.config(state="normal", text="⏯ INICIAR PARTIDO", bg=COLOR_ROJO_RAX)
         self.btn_descanso.config(state="disabled", bg="#333", fg="#ccc")
         self.btn_segundo.config(state="disabled")
+        self.btn_pausa.config(state="disabled", text="⏸ PAUSA", bg="#E67E22")
+        self.estado_pausa_anterior = None
 
         self._actualizar_ui()
         logging.info("PARTIDO RESETEADO")
 
     def _salir(self):
         """Cerrar la aplicacion"""
-        if self.estado in (PRIMER_TIEMPO, SEGUNDO_TIEMPO):
+        if self.estado in (PRIMER_TIEMPO, SEGUNDO_TIEMPO, PAUSADO):
             if not messagebox.askyesno("Salir", "Hay un partido en curso. ¿Salir igual?"):
                 return
         self._detener_timer()
